@@ -12,14 +12,28 @@ public class Client {
                 DataInputStream input = new DataInputStream(socket.getInputStream());
                 DataOutputStream output  = new DataOutputStream(socket.getOutputStream())
         ) {
-            Scanner scanner = new Scanner(System.in);
+            Scanner inp = new Scanner(System.in);
             System.out.println("Как Вас зовут?");
-            String msg = scanner.nextLine();
+            String msg = inp.nextLine();
 
             output.writeUTF(msg);
             String receivedMsg = input.readUTF();
 
             System.out.println("Привет, " + receivedMsg);
+
+            String word = inp.nextLine();
+            output.writeUTF(word);
+            receivedMsg = input.readUTF();
+            int i = 0;
+
+            while (!word.equals("bue")){
+                i++;
+                System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
+                word = inp.nextLine();
+                output.writeUTF(word);
+                receivedMsg = input.readUTF();
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

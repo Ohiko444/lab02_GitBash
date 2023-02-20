@@ -13,9 +13,21 @@ public class Server {
                         DataInputStream input = new DataInputStream(socket.getInputStream());
                         DataOutputStream output = new DataOutputStream(socket.getOutputStream())
                 ) {
+                    String name = input.readUTF();
+                    output.writeUTF(name);
+                    System.out.println("К нам пришёл " + name);
+
                     String msg = input.readUTF();
                     output.writeUTF(msg);
-                    System.out.println("К нам пришёл " + msg);
+                    int i = 0;
+
+                    while (!msg.equals("bue")){
+                        i++;
+                        System.out.println("Получено сообщение №" + i + " - " + msg);
+                        msg = input.readUTF();
+                        output.writeUTF(msg);
+                    }
+                    System.out.println("Пока, " + name);
                 }
             }
         } catch (IOException e) {
