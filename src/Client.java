@@ -21,19 +21,51 @@ public class Client {
 
             System.out.println("Привет, " + receivedMsg);
 
-            String word = inp.nextLine();
-            output.writeUTF(word);
-            receivedMsg = input.readUTF();
-            int i = 0;
+            if (!receivedMsg.equals("admin")){
 
-            while (!word.equals("bue")){
-                i++;
-                System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
-                word = inp.nextLine();
+                String word = inp.nextLine();
                 output.writeUTF(word);
                 receivedMsg = input.readUTF();
 
+                int i = 0;
+
+                while (!word.equals("bye")){
+                    i++;
+                    System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
+                    word = inp.nextLine();
+                    output.writeUTF(word);
+                    receivedMsg = input.readUTF();
+                }
+
+            } else {
+
+                String word = inp.nextLine();
+                output.writeUTF(word);
+                receivedMsg = input.readUTF();
+
+                while (!word.equals("exit")){
+
+                    int i = 0;
+
+                    while (!word.equals("bye") && !word.equals("exit")){
+                        i++;
+                        System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
+                        word = inp.nextLine();
+                        output.writeUTF(word);
+                        receivedMsg = input.readUTF();
+                    }
+
+                }
+
+                socket.close();
+                input.close();
+                output.close();
+                //System.exit(0);
+
             }
+
+            System.err.println("Сервер закрыт? - " + socket.isClosed());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
