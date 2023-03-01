@@ -7,60 +7,74 @@ public class Server {
     public static void main(String[] args) {
         System.out.println("Сервер запущен и готов к работе...");
         try (ServerSocket server = new ServerSocket(PORT)) {
-            while (true) {
-                try (
-                        Socket socket = server.accept();
-                        DataInputStream input = new DataInputStream(socket.getInputStream());
-                        DataOutputStream output = new DataOutputStream(socket.getOutputStream())
-                ) {
-                    String name = input.readUTF();
-                    output.writeUTF(name);
-                    System.out.println("К нам пришёл " + name);
-
-                    if (!name.equals("admin")){
-
-                        String msg = input.readUTF();
-                        output.writeUTF(msg);
-                        int i = 0;
-
-                        while (!msg.equals("bye")){
-                            i++;
-                            System.out.println("Получено сообщение №" + i + " - " + msg);
-                            msg = input.readUTF();
-                            output.writeUTF(msg);
-                        }
-                        System.out.println("Пока, " + name);
-
-                    } else {
-
-                        String msg = input.readUTF();
-                        output.writeUTF(msg);
-
-                        while (!msg.equals("exit")) {
-                            int i = 0;
-
-                            while (!msg.equals("bye") && !msg.equals("exit")){
-                                i++;
-                                System.out.println("Получено сообщение №" + i + " - " + msg);
-                                msg = input.readUTF();
-                                output.writeUTF(msg);
-                            }
-                            System.out.println("Пока, " + name);
-                            break;
-                        }
-
-                        if (msg.equals("exit")){
-                            System.out.println("admin завершил работу сервера");
-                            socket.close();
-                            input.close();
-                            output.close();
-                            break;
-                        }
-
-                    }
-                }
+            while (true){
+                Session session = new Session(server.accept());
+                session.start();
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class Session extends Thread{
+    private final Socket socket;
+
+    public Session(Socket socketForClient){
+        this.socket = socketForClient;
+    }
+
+    public void run(){
+        try(
+            DataInputStream input = new DataInputStream(socket.getInputStream());
+            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+        ){
+            String name = input.readUTF();
+            output.writeUTF(name);
+            System.out.println("К нам пришёл " + name);
+
+            if (!name.equals("admin")){
+
+                String msg = input.readUTF();
+                output.writeUTF(msg);
+                int i = 0;
+
+                while (!msg.equals("bye")){
+                    i++;
+                    System.out.println("Получено сообщение №" + i + " от " + name + " - " + msg);
+                    msg = input.readUTF();
+                    output.writeUTF(msg);
+                }
+                System.out.println("Пока, " + name);
+
+            } else {
+
+                String msg = input.readUTF();
+                output.writeUTF(msg);
+
+                while (!msg.equals("exit")) {
+                    int i = 0;
+
+                    while (!msg.equals("bye") && !msg.equals("exit")){
+                        i++;
+                        System.out.println("Получено сообщение №" + i + " - " + msg);
+                        msg = input.readUTF();
+                        output.writeUTF(msg);
+                    }
+                    System.out.println("Пока, " + name);
+                    break;
+                }
+
+                if (msg.equals("exit")){
+                    System.out.println("admin завершил работу сервера");
+                    socket.close();
+                    input.close();
+                    output.close();
+                    System.exit(0);
+                }
+
+            }
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

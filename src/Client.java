@@ -43,24 +43,23 @@ public class Client {
                 output.writeUTF(word);
                 receivedMsg = input.readUTF();
 
-                while (!word.equals("exit")){
+                int i = 0;
 
-                    int i = 0;
+                while (!word.equals("bye") && !word.equals("exit")){
 
-                    while (!word.equals("bye") && !word.equals("exit")){
-                        i++;
-                        System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
-                        word = inp.nextLine();
-                        output.writeUTF(word);
-                        receivedMsg = input.readUTF();
-                    }
+                    i++;
+                    System.out.println("Ответ сервера: " + i + " - " + receivedMsg);
+                    word = inp.nextLine();
+                    output.writeUTF(word);
+                    receivedMsg = input.readUTF();
 
                 }
 
-                socket.close();
-                input.close();
-                output.close();
-                //System.exit(0);
+                if (word.equals("exit")){
+                    socket.close();
+                    input.close();
+                    output.close();
+                }
 
             }
 
